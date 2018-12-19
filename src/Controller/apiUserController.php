@@ -124,6 +124,46 @@ class apiUserController extends AbstractController
     }
 
     /**
+     * @Route(path="/{id}", name="deleteOne", methods={ Request::METHOD_DELETE })
+     * @param User|null $user
+     * @return JsonResponse
+     */
+    public function deleteOneUser(?User $user): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+        if($user === null) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
+        } else {
+            $em->remove($user);
+            $em->flush();
+            return new JsonResponse( null, Response::HTTP_NO_CONTENT);
+        }
+    }
+
+    /**
+     * @Route(path="", name="deleteAll", methods={ Request::METHOD_DELETE })
+     * @return JsonResponse
+     */
+    public function deleteAllUsers(): JsonResponse
+    {
+        $em = $this->getDoctrine()->getManager();
+        /** @var User[] $users */
+        $users = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->findAll();
+
+        if($users === null) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
+        } else {
+            foreach ($users as $user) {
+                $em->remove($user);
+                $em->flush();
+            }
+            return new JsonResponse( null, Response::HTTP_NO_CONTENT);
+        }
+    }
+
+    /**
      * @param int $statusCode
      * @param string $message
      *
