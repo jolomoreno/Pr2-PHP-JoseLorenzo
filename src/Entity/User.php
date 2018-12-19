@@ -147,11 +147,21 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param bool|null $admin
+     * @return bool|null $admin
      */
-    public function setAdmin(?bool $admin): void
+    public function isAdmin(): bool
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @param bool $admin
+     * @return User
+     */
+    public function setIsAdmin(bool $admin): User
     {
         $this->admin = $admin;
+        return $this;
     }
 
     /**
@@ -172,6 +182,18 @@ class User implements \JsonSerializable
     public function setPassword(string $password): void
     {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Verifies that the given hash matches the user password.
+     *
+     * @param string $password password
+     *
+     * @return boolean
+     */
+    public function validatePassword($password): bool
+    {
+        return password_verify($password, $this->password);
     }
 
     /**
