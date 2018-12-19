@@ -152,15 +152,11 @@ class apiUserController extends AbstractController
             ->getRepository(User::class)
             ->findAll();
 
-        if($users === null) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
-        } else {
-            foreach ($users as $user) {
-                $em->remove($user);
-                $em->flush();
-            }
-            return new JsonResponse( null, Response::HTTP_NO_CONTENT);
+        foreach ($users as $user) {
+            $em->remove($user);
+            $em->flush();
         }
+        return new JsonResponse( null, Response::HTTP_NO_CONTENT);
     }
 
     /**
