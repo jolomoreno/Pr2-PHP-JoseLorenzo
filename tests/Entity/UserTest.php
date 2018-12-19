@@ -1,13 +1,9 @@
 <?php
 /**
- * PHP version 7.2
- * tests/Entity/UserTest.php
- *
- * @category EntityTests
- * @package  MiW\Results\Tests
- * @author   Javier Gil <franciscojavier.gil@upm.es>
- * @license  https://opensource.org/licenses/MIT MIT License
- * @link     http://www.etsisi.upm.es ETS de Ingeniería de Sistemas Informáticos
+ * Created by PhpStorm.
+ * User: jolo
+ * Date: 19/12/18
+ * Time: 21:31
  */
 
 namespace App\Tests\Entity;
