@@ -45,16 +45,16 @@ class apiUserController extends AbstractController
     }
 
     /**
-     * @Route(path="/{id}", name="get", methods={ Request::METHOD_GET })
+     * @Route(path="/{id}", name="getOne", methods={ Request::METHOD_GET })
      * @param User|null $user
      * @return JsonResponse
      */
-    public function getPersona(?User $user): JsonResponse
+    public function getOneUser(?User $user): JsonResponse
     {
-//        /** @var Persona $persona */
-//        $persona = $this->getDoctrine()
-//            ->getRepository(Persona::class)
-//            ->find($dni);
+        //  /** @var User $user */
+        //  $user = $this->getDoctrine()
+        //  ->getRepository(User::class)
+        //  ->find($id);
         return (null === $user)
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse(
