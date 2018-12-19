@@ -70,7 +70,7 @@ class User implements \JsonSerializable
         $this->email = $email;
         $this->enabled = $enabled;
         $this->admin = $admin;
-        $this->password = $password;
+        $this->setPassword($password);
     }
 
 
@@ -163,11 +163,15 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param string $password
+     * Set password
+     *
+     * @param string $password password
+     *
+     * @return User
      */
     public function setPassword(string $password): void
     {
-        $this->password = $password;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
 
     /**
@@ -180,12 +184,10 @@ class User implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'user' => [
-                'username'      => utf8_encode($this->username),
-                'email'         => utf8_encode($this->email),
-                'enabled'       => $this->enabled,
-                'admin'         => $this->admin
-            ]
+            'username'      => utf8_encode($this->username),
+            'email'         => utf8_encode($this->email),
+            'enabled'       => $this->enabled,
+            'admin'         => $this->admin
         ];
     }
 

@@ -63,6 +63,67 @@ class apiUserController extends AbstractController
     }
 
     /**
+     * @param Request $request
+     * @Route(path="", name="post", methods={ Request::METHOD_POST })
+     * @return JsonResponse
+     */
+    public function postPersona(Request $request): JsonResponse
+    {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $datosPeticion = $request->getContent();
+        $datos = json_decode($datosPeticion, true);
+        $username = $datos['username'] ?? null;
+        $email = $datos['email'] ?? null;
+        $enabled = $datos['enabled'] ?? null;
+        $password = $datos['password'] ?? null;
+        $admin = $datos['admin'] ?? false;
+        // Error: falta USERNAME
+        if (null === $username) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USERNAME');
+        }
+
+        // Error: falta EMAIL
+        if (null === $email) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta EMAIL');
+        }
+
+        // Error: falta ENABLED
+        if (null === $enabled) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta ENABLED');
+        }
+
+        // Error: falta PASWORD
+        if (null === $password) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta PASSWORD');
+        }
+
+        // Error: USERNAME ya existe
+        /** @var User $user */
+        $user = $em->getRepository(User::class)->findOneBy(['username' => $username]);
+        if (null !== $user) {
+            return $this->error(Response::HTTP_BAD_REQUEST, 'USERNAME ya existe');
+        }
+
+        // Error: EMAIL ya existe
+        /** @var User $user */
+        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        if (null !== $user) {
+            return $this->error(Response::HTTP_BAD_REQUEST, 'EMAIL ya existe');
+        }
+
+        // Crear User
+        $user = new User($username,$email,$enabled,$admin,$password);
+
+        // Hacerla persistente
+        $em->persist($user);
+        $em->flush();
+
+        // devolver respuesta
+        return new JsonResponse($user, Response::HTTP_CREATED);
+    }
+
+    /**
      * @param int $statusCode
      * @param string $message
      *
