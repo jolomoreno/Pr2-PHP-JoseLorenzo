@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class UserTest
  *
- * @package MiW\Results\Tests\Entity
+ * @package App\Entity\User
  * @group   users
  */
 class UserTest extends TestCase
