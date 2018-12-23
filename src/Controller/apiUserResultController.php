@@ -49,73 +49,6 @@ class apiUserResultController extends AbstractController
             : new JsonResponse($results);
     }
 
-    // TODO: Decidir si quitarlo, realiza lo mismo que el endpoint GET /results/{idResult}
-    /**
-     * @Route(path="/{user}/results/{result}", name="getOne", methods={ Request::METHOD_GET })
-     * @param Result|null $result
-     * @param User $user
-     * @return JsonResponse
-     */
-    public function getOneResultOfUser(?User $user, ?Result $result): JsonResponse
-    {
-        if (null === $user) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'USER DOESNT EXISTS IN DB');
-        }
-
-        if (null === $result) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'RESULT DOESNT EXISTS IN DB');
-        }
-
-        /** @var Result resultDB */
-        $resultsDB = $this->getDoctrine()
-            ->getRepository(Result::class)
-            ->findOneBy([
-                'id'=>$result->getId(),
-                'user'=>$user->getId()
-            ]);
-
-        return (null === $resultsDB)
-            ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
-            : new JsonResponse($resultsDB);
-    }
-
-
-    // TODO: Decidir si quitarlo, realiza lo mismo que el endpoint DELETE /results/{idResult}
-    /**
-     * @Route(path="/{user}/results/{result}", name="deleteOne", methods={ Request::METHOD_DELETE })
-     * @param Result|null $result
-     * * @param User|null $user
-     * @return JsonResponse
-     */
-    public function deleteOneResultOfUser(?User $user, ?Result $result): JsonResponse
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        if (null === $user) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'USER DOESNT EXISTS IN DB');
-        }
-
-        if (null === $result) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'RESULT DOESNT EXISTS IN DB');
-        }
-
-        /** @var Result resultDB */
-        $resultsDB = $this->getDoctrine()
-            ->getRepository(Result::class)
-            ->findOneBy([
-                'id'=>$result->getId(),
-                'user'=>$user->getId()
-            ]);
-
-        if($resultsDB === null) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
-        } else {
-            $em->remove($resultsDB);
-            $em->flush();
-            return new JsonResponse( null, Response::HTTP_NO_CONTENT);
-        }
-    }
-
     /**
      * @param User $user
      * @Route(path="/{id}/results", name="deleteAll", methods={ Request::METHOD_DELETE })
@@ -140,11 +73,6 @@ class apiUserResultController extends AbstractController
         }
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-
-    /*
-     * TODO: Decidir si se implementan el ENDPOINT: POST /users/{userId}/results
-     * TODO: Decidir si se implementan el ENDPOINT: PUT /users/{userId}/results/{resultId}
-     */
 
     /**
      * @param int $statusCode
