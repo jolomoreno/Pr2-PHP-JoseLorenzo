@@ -26,22 +26,13 @@ class DefaultController extends AbstractController
 
     /**
      * @param string $nombre
-     * @Route(path="/saluda/{nombre}", name="index")
+     * @Route(path="/{nombre}", name="index")
      * index
      * @return Response
      */
     public function index(string $nombre = null): Response
     {
-        $sujeto = $nombre ?? 'MiW';
-        return new Response("Hola $sujeto!!!");
-    }
-
-    /**
-     * @Route(path="/adios", name="dile_adios", methods={ "GET" })
-     * @return Response
-     */
-    public function despidete(): Response
-    {
-        return new Response('Hasta luego Mari Carmen!!!');
+        $sujeto = $nombre ?? 'usuario';
+        return new Response("Hola $sujeto, bienvenido al API!!!");
     }
 }
