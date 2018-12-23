@@ -66,7 +66,7 @@ class apiUserController extends AbstractController
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      */
-    public function postPersona(Request $request): JsonResponse
+    public function postUser(Request $request): JsonResponse
     {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();

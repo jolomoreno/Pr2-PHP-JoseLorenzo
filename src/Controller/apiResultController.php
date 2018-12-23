@@ -65,7 +65,7 @@ class apiResultController extends AbstractController
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      */
-    public function postPersona(Request $request): JsonResponse
+    public function postResult(Request $request): JsonResponse
     {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
@@ -128,7 +128,7 @@ class apiResultController extends AbstractController
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      */
-    public function putPersona(?User $user, Request $request): JsonResponse
+    public function putUser(?User $user, Request $request): JsonResponse
     {
         if (null === $user) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
@@ -195,16 +195,16 @@ class apiResultController extends AbstractController
 
     /**
      * @Route(path="/{id}", name="deleteOne", methods={ Request::METHOD_DELETE })
-     * @param User|null $user
+     * @param Result|null $result
      * @return JsonResponse
      */
-    public function deleteOneUser(?User $user): JsonResponse
+    public function deleteOneResult(?Result $result): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        if($user === null) {
+        if($result === null) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
         } else {
-            $em->remove($user);
+            $em->remove($result);
             $em->flush();
             return new JsonResponse( null, Response::HTTP_NO_CONTENT);
         }
@@ -214,16 +214,16 @@ class apiResultController extends AbstractController
      * @Route(path="", name="deleteAll", methods={ Request::METHOD_DELETE })
      * @return JsonResponse
      */
-    public function deleteAllUsers(): JsonResponse
+    public function deleteAllResults(): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        /** @var User[] $users */
-        $users = $this->getDoctrine()
+        /** @var Result[] $results */
+        $results = $this->getDoctrine()
             ->getRepository(User::class)
             ->findAll();
 
-        foreach ($users as $user) {
-            $em->remove($user);
+        foreach ($results as $result) {
+            $em->remove($result);
             $em->flush();
         }
         return new JsonResponse( null, Response::HTTP_NO_CONTENT);
