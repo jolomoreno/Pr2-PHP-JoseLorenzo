@@ -78,138 +78,71 @@ class apiUserResultController extends AbstractController
             : new JsonResponse($resultsDB);
     }
 
-    /**
-     * @param Request $request
-     * @Route(path="", name="post", methods={ Request::METHOD_POST })
-     * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function postResult(Request $request): JsonResponse
-    {
-        /** @var EntityManager $em */
-        $em = $this->getDoctrine()->getManager();
-        $datosPeticion = $request->getContent();
-        $datos = json_decode($datosPeticion, true);
-        $userId = $datos['user'] ?? null;
-        $newResult = $datos['result'] ?? null;
-        $newTimestamp = new \DateTime('now');
-
-        // Error: falta USER
-        if (null === $userId) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USER');
-        }
-
-        // Error: falta RESULT
-        if (null === $newResult) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta RESULT');
-        }
-
-        //Error: USER no existe
-        $userDB = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->find($userId);
-        if (null === $userDB) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'USER NOT FOUND');
-        }
-
-        // Crear Result
-        $result = new Result($newResult,$newTimestamp,$userDB);
-
-        // Hacer persistente RESULT
-        $em->persist($result);
-        $em->flush();
-
-        // devolver respuesta
-        return new JsonResponse($result, Response::HTTP_CREATED);
-    }
 
     /**
-     * @param Request $request
-     * @param Result $result
-     * @Route(path="/{id}", name="put", methods={ Request::METHOD_PUT })
-     * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function putResult(?Result $result, Request $request): JsonResponse
-    {
-        if (null === $result) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
-        }
-
-        /** @var EntityManager $em */
-        $em = $this->getDoctrine()->getManager();
-        $datosPeticion = $request->getContent();
-        $datos = json_decode($datosPeticion, true);
-        $userId = $datos['user'] ?? null;
-        $newResult = $datos['result'] ?? null;
-        $newTimestamp = new \DateTime('now');
-
-        // Error: falta USER
-        if (null === $userId) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USER');
-        }
-
-        // Error: falta RESULT
-        if (null === $newResult) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta RESULT');
-        }
-
-        //Error: USER no existe
-        $userDB = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->find($userId);
-        if (null === $userDB) {
-            return $this->error(Response::HTTP_NOT_FOUND, 'USER NOT FOUND');
-        }
-
-        // Modificar Result
-        $result->setResult($newResult);
-        $result->setTime($newTimestamp);
-        $result->setUser($userDB);
-
-        // Hacerla persistente
-        $em->persist($result);
-        $em->flush();
-
-        // devolver respuesta
-        return new JsonResponse($result, Response::HTTP_OK);
-    }
-
-    /**
-     * @Route(path="/{id}", name="deleteOne", methods={ Request::METHOD_DELETE })
+     * @Route(path="/{user}/results/{result}", name="deleteOne", methods={ Request::METHOD_DELETE })
      * @param Result|null $result
+     * * @param User|null $user
      * @return JsonResponse
      */
-    public function deleteOneResult(?Result $result): JsonResponse
+    public function deleteOneResultOfUser(?User $user, ?Result $result): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        if($result === null) {
+
+        if (null === $user) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER DOESNT EXISTS IN DB');
+        }
+
+        if (null === $result) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'RESULT DOESNT EXISTS IN DB');
+        }
+
+        /** @var Result resultDB */
+        $resultsDB = $this->getDoctrine()
+            ->getRepository(Result::class)
+            ->findOneBy([
+                'id'=>$result->getId(),
+                'user'=>$user->getId()
+            ]);
+
+        if($resultsDB === null) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
         } else {
-            $em->remove($result);
+            $em->remove($resultsDB);
             $em->flush();
             return new JsonResponse( null, Response::HTTP_NO_CONTENT);
         }
     }
 
     /**
-     * @Route(path="", name="deleteAll", methods={ Request::METHOD_DELETE })
+     * @param User $user
+     * @Route(path="/{id}/results", name="deleteAll", methods={ Request::METHOD_DELETE })
      * @return JsonResponse
      */
-    public function deleteAllResults(): JsonResponse
+    public function deleteAllResultsOfUser(?User $user): JsonResponse
     {
         $em = $this->getDoctrine()->getManager();
-        /** @var Result[] $results */
-        $results = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->findAll();
+        if (null === $user) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER DOESNT EXISTS IN DB');
+        }
 
-        foreach ($results as $result) {
-            $em->remove($result);
+        /** @var Result[] resultsDB */
+        $resultsDB = $this->getDoctrine()
+            ->getRepository(Result::class)
+            ->findBy(['user'=>$user->getId()]);
+
+
+        foreach ($resultsDB as $resultDB) {
+            $em->remove($resultDB);
             $em->flush();
         }
-        return new JsonResponse( null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
+
+    /*
+     * TODO: Decidir si se implementan el ENDPOINT: POST /users/{userId}/results
+     * TODO: Decidir si se implementan el ENDPOINT: PUT /users/{userId}/results/{resultId}
+     */
 
     /**
      * @param int $statusCode
