@@ -66,6 +66,7 @@ class apiUserController extends AbstractController
      * @param Request $request
      * @Route(path="", name="post", methods={ Request::METHOD_POST })
      * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
      */
     public function postPersona(Request $request): JsonResponse
     {
@@ -114,6 +115,78 @@ class apiUserController extends AbstractController
 
         // Crear User
         $user = new User($username,$email,$enabled,$admin,$password);
+
+        // Hacerla persistente
+        $em->persist($user);
+        $em->flush();
+
+        // devolver respuesta
+        return new JsonResponse($user, Response::HTTP_CREATED);
+    }
+
+    /**
+     * @param Request $request
+     * @param User $user
+     * @Route(path="/{id}", name="put", methods={ Request::METHOD_PUT })
+     * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function putPersona(?User $user, Request $request): JsonResponse
+    {
+        if (null === $user) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
+        }
+
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $datosPeticion = $request->getContent();
+        $datos = json_decode($datosPeticion, true);
+        $username = $datos['username'] ?? null;
+        $email = $datos['email'] ?? null;
+        $enabled = $datos['enabled'] ?? null;
+        $password = $datos['password'] ?? null;
+        $admin = $datos['admin'] ?? false;
+        // Error: falta USERNAME
+        if (null === $username) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USERNAME');
+        }
+
+        // Error: falta EMAIL
+        if (null === $email) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta EMAIL');
+        }
+
+        // Error: falta ENABLED
+        if (null === $enabled) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta ENABLED');
+        }
+
+        // Error: falta PASWORD
+        if (null === $password) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta PASSWORD');
+        }
+
+
+        // Error: USERNAME ya existe
+        /** @var User $user */
+        $userDB = $em->getRepository(User::class)->findOneBy(['username' => $username]);
+        if (null !== $userDB) {
+            return $this->error(Response::HTTP_BAD_REQUEST, 'USERNAME ya existe');
+        }
+
+        // Error: EMAIL ya existe
+        /** @var User $user */
+        $userDB = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        if (null !== $userDB) {
+            return $this->error(Response::HTTP_BAD_REQUEST, 'EMAIL ya existe');
+        }
+
+        // Modificar User
+        $user->setUsername($username);
+        $user->setEmail($email);
+        $user->setEnabled($enabled);
+        $user->setIsAdmin($admin);
+        $user->setPassword($password);
 
         // Hacerla persistente
         $em->persist($user);

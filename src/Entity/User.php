@@ -206,6 +206,7 @@ class User implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
+            'id'            => $this->id,
             'username'      => utf8_encode($this->username),
             'email'         => utf8_encode($this->email),
             'enabled'       => $this->enabled,
