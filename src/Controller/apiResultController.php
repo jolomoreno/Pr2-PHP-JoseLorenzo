@@ -2,13 +2,14 @@
 /**
  * Created by PhpStorm.
  * User: jolo
- * Date: 19/12/18
- * Time: 21:31
+ * Date: 23/12/18
+ * Time: 12:46
  */
 
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Result;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,47 +18,45 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class apiUserController
+ * Class apiResultController
  *
  * @package App\Controller
  *
- * @Route(path=apiUserController::API_USER, name="api_user_")
+ * @Route(path=apiResultController::API_RESULT, name="api_result_")
  */
-class apiUserController extends AbstractController
+class apiResultController extends AbstractController
 {
-    public const API_USER = '/api/v1/users';
+    public const API_RESULT = '/api/v1/results';
 
     /**
      * @Route(path="", name="getAll", methods={ Request::METHOD_GET })
      * @return JsonResponse
      */
-    public function getAllUsers(): JsonResponse
+    public function getAllResults(): JsonResponse
     {
-        /** @var User[] $users */
-        $users = $this->getDoctrine()
-            ->getRepository(User::class)
+        /** @var Result[] results */
+        $results = $this->getDoctrine()
+            ->getRepository(Result::class)
             ->findAll();
-        return (null === $users)
+        return (null === $results)
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
-            : new JsonResponse($users);
+            : new JsonResponse($results);
     }
 
     /**
      * @Route(path="/{id}", name="getOne", methods={ Request::METHOD_GET })
-     * @param User|null $user
+     * @param Result|null $result
      * @return JsonResponse
      */
-    public function getOneUser(?User $user): JsonResponse
+    public function getOneResult(?Result $result): JsonResponse
     {
         //  /** @var User $user */
         //  $user = $this->getDoctrine()
         //  ->getRepository(User::class)
         //  ->find($id);
-        return (null === $user)
+        return (null === $result)
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
-            : new JsonResponse(
-                $user
-            );
+            : new JsonResponse($result);
     }
 
     /**

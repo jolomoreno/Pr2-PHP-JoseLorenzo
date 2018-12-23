@@ -133,12 +133,12 @@ class Result implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array(
+        return [
             'id'     => $this->id,
             'result' => $this->result,
             'user'   => $this->user,
             'time'   => $this->time->format('Y-m-d H:i:s')
-        );
+        ];
     }
 
     /**
