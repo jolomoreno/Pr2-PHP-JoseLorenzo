@@ -49,6 +49,7 @@ class apiUserResultController extends AbstractController
             : new JsonResponse($results);
     }
 
+    // TODO: Decidir si quitarlo, realiza lo mismo que el endpoint GET /results/{idResult}
     /**
      * @Route(path="/{user}/results/{result}", name="getOne", methods={ Request::METHOD_GET })
      * @param Result|null $result
