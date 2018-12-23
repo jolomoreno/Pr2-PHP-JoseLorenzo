@@ -129,7 +129,7 @@ class apiUserController extends AbstractController
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      */
-    public function putPersona(?User $user, Request $request): JsonResponse
+    public function putUser(?User $user, Request $request): JsonResponse
     {
         if (null === $user) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
