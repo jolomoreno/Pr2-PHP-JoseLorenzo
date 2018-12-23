@@ -71,66 +71,49 @@ class apiResultController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $datosPeticion = $request->getContent();
         $datos = json_decode($datosPeticion, true);
-        $username = $datos['username'] ?? null;
-        $email = $datos['email'] ?? null;
-        $enabled = $datos['enabled'] ?? null;
-        $password = $datos['password'] ?? null;
-        $admin = $datos['admin'] ?? false;
-        // Error: falta USERNAME
-        if (null === $username) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USERNAME');
+        $userId = $datos['user'] ?? null;
+        $newResult = $datos['result'] ?? null;
+        $newTimestamp = new \DateTime('now');
+
+        // Error: falta USER
+        if (null === $userId) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USER');
         }
 
-        // Error: falta EMAIL
-        if (null === $email) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta EMAIL');
+        // Error: falta RESULT
+        if (null === $newResult) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta RESULT');
         }
 
-        // Error: falta ENABLED
-        if (null === $enabled) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta ENABLED');
+        //Error: USER no existe
+        $userDB = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($userId);
+        if (null === $userDB) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER NOT FOUND');
         }
 
-        // Error: falta PASWORD
-        if (null === $password) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta PASSWORD');
-        }
+        // Crear Result
+        $result = new Result($newResult,$newTimestamp,$userDB);
 
-        // Error: USERNAME ya existe
-        /** @var User $user */
-        $user = $em->getRepository(User::class)->findOneBy(['username' => $username]);
-        if (null !== $user) {
-            return $this->error(Response::HTTP_BAD_REQUEST, 'USERNAME ya existe');
-        }
-
-        // Error: EMAIL ya existe
-        /** @var User $user */
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-        if (null !== $user) {
-            return $this->error(Response::HTTP_BAD_REQUEST, 'EMAIL ya existe');
-        }
-
-        // Crear User
-        $user = new User($username,$email,$enabled,$admin,$password);
-
-        // Hacerla persistente
-        $em->persist($user);
+        // Hacer persistente RESULT
+        $em->persist($result);
         $em->flush();
 
         // devolver respuesta
-        return new JsonResponse($user, Response::HTTP_CREATED);
+        return new JsonResponse($result, Response::HTTP_CREATED);
     }
 
     /**
      * @param Request $request
-     * @param User $user
+     * @param Result $result
      * @Route(path="/{id}", name="put", methods={ Request::METHOD_PUT })
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      */
-    public function putUser(?User $user, Request $request): JsonResponse
+    public function putResult(?Result $result, Request $request): JsonResponse
     {
-        if (null === $user) {
+        if (null === $result) {
             return $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND');
         }
 
@@ -138,59 +121,39 @@ class apiResultController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $datosPeticion = $request->getContent();
         $datos = json_decode($datosPeticion, true);
-        $username = $datos['username'] ?? null;
-        $email = $datos['email'] ?? null;
-        $enabled = $datos['enabled'] ?? null;
-        $password = $datos['password'] ?? null;
-        $admin = $datos['admin'] ?? false;
-        // Error: falta USERNAME
-        if (null === $username) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USERNAME');
+        $userId = $datos['user'] ?? null;
+        $newResult = $datos['result'] ?? null;
+        $newTimestamp = new \DateTime('now');
+
+        // Error: falta USER
+        if (null === $userId) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta USER');
         }
 
-        // Error: falta EMAIL
-        if (null === $email) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta EMAIL');
+        // Error: falta RESULT
+        if (null === $newResult) {
+            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta RESULT');
         }
 
-        // Error: falta ENABLED
-        if (null === $enabled) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta ENABLED');
+        //Error: USER no existe
+        $userDB = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($userId);
+        if (null === $userDB) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER NOT FOUND');
         }
 
-        // Error: falta PASWORD
-        if (null === $password) {
-            return $this->error(Response::HTTP_UNPROCESSABLE_ENTITY, 'Falta PASSWORD');
-        }
-
-
-        // Error: USERNAME ya existe
-        /** @var User $user */
-        $userDB = $em->getRepository(User::class)->findOneBy(['username' => $username]);
-        if (null !== $userDB) {
-            return $this->error(Response::HTTP_BAD_REQUEST, 'USERNAME ya existe');
-        }
-
-        // Error: EMAIL ya existe
-        /** @var User $user */
-        $userDB = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-        if (null !== $userDB) {
-            return $this->error(Response::HTTP_BAD_REQUEST, 'EMAIL ya existe');
-        }
-
-        // Modificar User
-        $user->setUsername($username);
-        $user->setEmail($email);
-        $user->setEnabled($enabled);
-        $user->setIsAdmin($admin);
-        $user->setPassword($password);
+        // Modificar Result
+        $result->setResult($newResult);
+        $result->setTime($newTimestamp);
+        $result->setUser($userDB);
 
         // Hacerla persistente
-        $em->persist($user);
+        $em->persist($result);
         $em->flush();
 
         // devolver respuesta
-        return new JsonResponse($user, Response::HTTP_CREATED);
+        return new JsonResponse($result, Response::HTTP_OK);
     }
 
     /**

@@ -114,7 +114,7 @@ class apiUserController extends AbstractController
         // Crear User
         $user = new User($username,$email,$enabled,$admin,$password);
 
-        // Hacerla persistente
+        // Hacer persistente USER
         $em->persist($user);
         $em->flush();
 
@@ -191,7 +191,7 @@ class apiUserController extends AbstractController
         $em->flush();
 
         // devolver respuesta
-        return new JsonResponse($user, Response::HTTP_CREATED);
+        return new JsonResponse($user, Response::HTTP_OK);
     }
 
     /**
