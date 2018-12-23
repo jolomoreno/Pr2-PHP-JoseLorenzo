@@ -79,6 +79,7 @@ class apiUserResultController extends AbstractController
     }
 
 
+    // TODO: Decidir si quitarlo, realiza lo mismo que el endpoint DELETE /results/{idResult}
     /**
      * @Route(path="/{user}/results/{result}", name="deleteOne", methods={ Request::METHOD_DELETE })
      * @param Result|null $result
