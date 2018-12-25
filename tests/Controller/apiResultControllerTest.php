@@ -342,14 +342,14 @@ class apiResultControllerTest extends WebTestCase
     }
 
     /**
-     * Implements testPutResult422
+     * Implements testPutResult200
      * @depends testPostResult201
      * @covers ::putResult
      * @param array $resultCreado
      * @return void
      * @throws
      */
-    public function testPutResult201(array $resultCreado): void
+    public function testPutResult200(array $resultCreado): void
     {
         $id = $resultCreado["id"];
         $userId = self::$user['id'];;
@@ -377,6 +377,54 @@ class apiResultControllerTest extends WebTestCase
         dump($datosRecibidos, '<<<< PUT RESULT 200');
         self::assertEquals($result, $datosRecibidos["result"]);
         self::assertEquals($userId, $datosRecibidos["user"]["id"]);
+    }
+
+    /**
+     * Implements testDeleteOneResult404
+     * @covers ::deleteOneResult
+     */
+    public function testDeleteOneResult404(): void
+    {
+        $id = random_int(0, 10E6);
+
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiResultController::API_RESULT . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<< DELETE ONE RESULT 404');
+    }
+
+    /**
+     * Implements testDeleteOneResult200
+     * @depends testPostResult201
+     * @covers ::deleteOneResult
+     * @param array $resultCreado
+     */
+    public function testDeleteOneResult200(array $resultCreado): void
+    {
+        $id = $resultCreado['id'];
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiResultController::API_RESULT . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self:self::assertEquals("", $response->getContent());
+        dump($response->getContent(), '<<<< DELETE ONE RESULT 204');
     }
 
     /*
