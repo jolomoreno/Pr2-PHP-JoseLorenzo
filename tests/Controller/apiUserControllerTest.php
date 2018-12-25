@@ -229,8 +229,50 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testPutUser200
+     * @depends testGetOneUser200
+     * @covers ::postUser
+     * @param array $user
+     * @return void
+     * @throws
+     */
+    public function testPutUser200(array $user): void
+    {
+        $id = $user["id"];
+        $username = "user_" . (string) random_int(0, 10E6);
+        $email = $username . "@test.com";
+        $password = "pass" . $username . "word";
+
+        $datos = [
+            'username' => $username,
+            'email' => $email,
+            'enabled' => true,
+            'admin' => false,
+            'password' => $password,
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiUserController::API_USER . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT USER 200');
+        self::assertEquals($username, $datosRecibidos["username"]);
+        self::assertEquals($email, $datosRecibidos["email"]);
+        self::assertEquals(true, $datosRecibidos["enabled"]);
+        self::assertEquals(false, $datosRecibidos["admin"]);
+    }
+
+    /**
      * Implements testPutUser404
-     * @covers ::deleteOneUser
+     * @covers ::putUser
      */
     public function testPutUser404(): void
     {
@@ -302,7 +344,7 @@ class apiUserControllerTest extends WebTestCase
 
     /**
      * Implements testDeleteOneUser200
-     * @covers ::deleteOneUser
+     * @covers ::deleteAllUsers
      */
     public function testDeleteAllUsers200(): void
     {
