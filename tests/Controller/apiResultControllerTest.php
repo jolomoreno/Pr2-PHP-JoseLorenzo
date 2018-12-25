@@ -84,7 +84,7 @@ class apiResultControllerTest extends WebTestCase
         ];
         self::$client->request(
             Request::METHOD_POST,
-            apiUserController::API_USER,
+            apiResultController::API_RESULT,
             [], [], [], json_encode($datos)
         );
         /** @var Response $response */
@@ -96,8 +96,42 @@ class apiResultControllerTest extends WebTestCase
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
         self::assertEquals(422, $datosRecibidos["message"]["code"]);
-        self::assertEquals("Falta USERNAME", $datosRecibidos["message"]["message"]);
+        self::assertEquals("Falta USER", $datosRecibidos["message"]["message"]);
         dump($datosRecibidos, '<<<<<< POST RESULT 422');
+    }
+
+    /**
+     * Implements testPostResult404
+     * @covers ::postResult
+     * @covers ::error
+     * @return void
+     * @throws
+     */
+    public function testPostResult404(): void
+    {
+        $userId = random_int(0, 10E6);
+        $result = random_int(0, 32);
+
+        $datos = [
+            'user' => $userId,
+            'result' => $result
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            apiResultController::API_RESULT,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("USER NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<<<< POST RESULT 404');
     }
 
     /*
@@ -106,7 +140,7 @@ class apiResultControllerTest extends WebTestCase
     public static function tearDownAfterClass()
     {
         // self::deleteUser(self::$user['id']);
-        dump('>>>>>>>>>>>>>>>>>>>>>>>>>> ENDS HERE');
+        dump('>>>>>>>>>>>>>>>>>>>>>>>>>> E2E RESULT TEST ENDS HERE');
     }
 
     /**

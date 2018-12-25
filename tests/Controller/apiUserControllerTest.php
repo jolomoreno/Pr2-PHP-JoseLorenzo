@@ -105,6 +105,7 @@ class apiUserControllerTest extends WebTestCase
         $datosRecibidos = json_decode($response->getContent(), true);
         self::assertEquals(422, $datosRecibidos["message"]["code"]);
         self::assertEquals("Falta USERNAME", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<<<< POST USER 422');
     }
 
     /**
