@@ -37,7 +37,7 @@ class apiUserController extends AbstractController
         $users = $this->getDoctrine()
             ->getRepository(User::class)
             ->findAll();
-        return (null === $users)
+        return (empty($users))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse($users);
     }

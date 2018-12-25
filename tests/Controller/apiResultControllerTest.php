@@ -34,6 +34,30 @@ class apiResultControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testGetAllResults404
+     * @covers ::getAllResults
+     * @covers ::error
+     */
+    public function testGetAllResults404()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            apiResultController::API_RESULT
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<<<< GET ALL RESULTS 404');
+    }
+
+    /**
      * Implements testPostResult201
      * @covers ::postResult
      * @return array
@@ -66,6 +90,30 @@ class apiResultControllerTest extends WebTestCase
         self::assertEquals($userId, $resultArray["user"]["id"]);
 
         return $resultArray;
+    }
+
+    /**
+     * Implements testGetAllResults200
+     * @covers ::getAllResults
+     */
+    public function testGetAllResults200()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            apiResultController::API_RESULT
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertArrayHasKey('id', $datosRecibidos[0]);
+        self::assertArrayHasKey('result', $datosRecibidos[0]);
+        self::assertArrayHasKey('user', $datosRecibidos[0]);
+        dump($datosRecibidos, '<<<< GET ALL RESULTS 200');
     }
 
     /**

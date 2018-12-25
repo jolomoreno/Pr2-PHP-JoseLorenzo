@@ -38,7 +38,7 @@ class apiResultController extends AbstractController
         $results = $this->getDoctrine()
             ->getRepository(Result::class)
             ->findAll();
-        return (null === $results)
+        return (empty($results))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse($results);
     }
