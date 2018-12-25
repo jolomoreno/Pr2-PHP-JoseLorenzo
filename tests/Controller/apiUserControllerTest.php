@@ -183,6 +183,8 @@ class apiUserControllerTest extends WebTestCase
         );
         self::assertJson($response->getContent());
         $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
         dump($datosRecibidos, '<<<<<< GET ONE USER 404');
     }
 
@@ -224,5 +226,74 @@ class apiUserControllerTest extends WebTestCase
         dump($datosRecibidos, '<<<< POST USER 400');
         self::assertEquals(400, $datosRecibidos["message"]["code"]);
         self::assertEquals("USERNAME ya existe", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testDeleteOneUser200
+     * @depends testPostUser201
+     * @covers ::deleteOneUser
+     * @param int $id
+     */
+    public function testDeleteOneUser200(int $id): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiUserController::API_USER . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self:self::assertEquals("", $response->getContent());
+        dump($response->getContent(), '<<<< DELETE ONE USER 200');
+    }
+
+    /**
+     * Implements testDeleteOneUser404
+     * @depends testPostUser201
+     * @covers ::deleteOneUser
+     */
+    public function testDeleteOneUser404(): void
+    {
+        $id = random_int(0, 10E6);
+
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiUserController::API_USER . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<< DELETE ONE USER 404');
+    }
+
+    /**
+     * Implements testDeleteOneUser200
+     * @depends testPostUser201
+     * @covers ::deleteOneUser
+     */
+    public function testDeleteAllUsers200(): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiUserController::API_USER
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self:self::assertEquals("", $response->getContent());
+        dump($response->getContent(), '<<<< DELETE ALL USERs 200');
     }
 }
