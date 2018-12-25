@@ -439,7 +439,7 @@ class apiUserControllerTest extends WebTestCase
             $response->getStatusCode()
         );
         self:self::assertEquals("", $response->getContent());
-        dump($response->getContent(), '<<<< DELETE ALL USERs 200');
+        dump($response->getContent(), '<<<< DELETE ALL USERS 204');
     }
 
 }

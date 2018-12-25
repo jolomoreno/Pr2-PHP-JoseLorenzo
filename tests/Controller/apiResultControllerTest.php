@@ -427,12 +427,32 @@ class apiResultControllerTest extends WebTestCase
         dump($response->getContent(), '<<<< DELETE ONE RESULT 204');
     }
 
+    /**
+     * Implements testDeleteAllResults200
+     * @covers ::deleteAllResults
+     */
+    public function testDeleteAllResults200(): void
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            apiResultController::API_RESULT
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NO_CONTENT,
+            $response->getStatusCode()
+        );
+        self:self::assertEquals("", $response->getContent());
+        dump($response->getContent(), '<<<< DELETE ALL RESULTS 204');
+    }
+
     /*
      * Ejecución al final de los tests
      */
     public static function tearDownAfterClass()
     {
-        // self::deleteUser(self::$user['id']);
+        self::deleteUser(self::$user['id']);
         dump('>>>>>>>>>>>>>>>>>>>>>>>>>> E2E RESULT TEST ENDS HERE');
     }
 
