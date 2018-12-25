@@ -44,7 +44,7 @@ class apiUserResultController extends AbstractController
             ->getRepository(Result::class)
             ->findBy(['user'=>$user->getId()]);
 
-        return (null === $results)
+        return (empty($results))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse($results);
     }
