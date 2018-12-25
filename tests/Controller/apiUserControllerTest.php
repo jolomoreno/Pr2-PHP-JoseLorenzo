@@ -229,6 +229,46 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testPutUser422
+     * @depends testGetOneUser200
+     * @covers ::postUser
+     * @param array $user
+     * @return void
+     * @throws
+     */
+    public function testPutUser400(array $user): void
+    {
+        $id = $user["id"];
+        $username = $user["username"];
+        $email = $username . "@test.com";
+        $password = "pass" . $username . "word";
+
+        $datos = [
+            'username' => $username,
+            'email' => $email,
+            'enabled' => true,
+            'admin' => false,
+            'password' => $password,
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiUserController::API_USER . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT USER 400');
+        self::assertEquals(400, $datosRecibidos["message"]["code"]);
+        self::assertEquals("USERNAME ya existe", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
      * Implements testPutUser200
      * @depends testGetOneUser200
      * @covers ::postUser
@@ -268,6 +308,45 @@ class apiUserControllerTest extends WebTestCase
         self::assertEquals($email, $datosRecibidos["email"]);
         self::assertEquals(true, $datosRecibidos["enabled"]);
         self::assertEquals(false, $datosRecibidos["admin"]);
+    }
+
+    /**
+     * Implements testPutUser422
+     * @depends testGetOneUser200
+     * @covers ::postUser
+     * @param array $user
+     * @return void
+     * @throws
+     */
+    public function testPutUser422(array $user): void
+    {
+        $id = $user["id"];
+        $username = "user_" . (string) random_int(0, 10E6);
+        $email = $username . "@test.com";
+        $password = "pass" . $username . "word";
+
+        $datos = [
+            'email' => $email,
+            'enabled' => true,
+            'admin' => false,
+            'password' => $password,
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiUserController::API_USER . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT USER 422');
+        self::assertEquals(422, $datosRecibidos["message"]["code"]);
+        self::assertEquals("Falta USERNAME", $datosRecibidos["message"]["message"]);
     }
 
     /**
@@ -361,4 +440,5 @@ class apiUserControllerTest extends WebTestCase
         self:self::assertEquals("", $response->getContent());
         dump($response->getContent(), '<<<< DELETE ALL USERs 200');
     }
+
 }
