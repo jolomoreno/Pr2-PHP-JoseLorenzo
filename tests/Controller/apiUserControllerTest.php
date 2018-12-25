@@ -53,4 +53,45 @@ class apiUserControllerTest extends WebTestCase
         self::assertEquals(true, $datosRecibidos[0]["enabled"]);
         self::assertEquals(true, $datosRecibidos[0]["admin"]);
     }
+
+    /**
+     * Implements testGetAllUsers200
+     * @covers ::postUser
+     * @return int
+     * @throws
+     */
+    public function testPostUser201(): int
+    {
+        $username = "user_" . (string) random_int(0, 10E6);
+        $email = $username . "@test.com";
+        $password = "pass" . $username . "word";
+
+        $datos = [
+            'username' => $username,
+            'email' => $email,
+            'enabled' => true,
+            'admin' => false,
+            'password' => $password,
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            apiUserController::API_USER,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_CREATED,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos);
+        self::assertEquals($username, $datosRecibidos["username"]);
+        self::assertEquals($email, $datosRecibidos["email"]);
+        self::assertEquals(true, $datosRecibidos["enabled"]);
+        self::assertEquals(false, $datosRecibidos["admin"]);
+
+        return $datosRecibidos['id'];
+    }
 }
