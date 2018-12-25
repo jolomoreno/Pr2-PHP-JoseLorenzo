@@ -31,6 +31,30 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testGetAllUsers404
+     * @covers ::getAllUsers
+     * @covers ::error
+     */
+    public function testGetAllUsers404()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            apiUserController::API_USER
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<<<< GET ALL USERS 404');
+    }
+
+    /**
      * Implements testPostUser201
      * @covers ::postUser
      * @return int
