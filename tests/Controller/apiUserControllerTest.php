@@ -229,6 +229,31 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
+     * Implements testPutUser404
+     * @covers ::deleteOneUser
+     */
+    public function testPutUser404(): void
+    {
+        $id = random_int(0, 10E6);
+
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiUserController::API_USER . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<< PUT ONE USER 404');
+    }
+
+    /**
      * Implements testDeleteOneUser200
      * @depends testPostUser201
      * @covers ::deleteOneUser
@@ -252,7 +277,6 @@ class apiUserControllerTest extends WebTestCase
 
     /**
      * Implements testDeleteOneUser404
-     * @depends testPostUser201
      * @covers ::deleteOneUser
      */
     public function testDeleteOneUser404(): void
@@ -278,7 +302,6 @@ class apiUserControllerTest extends WebTestCase
 
     /**
      * Implements testDeleteOneUser200
-     * @depends testPostUser201
      * @covers ::deleteOneUser
      */
     public function testDeleteAllUsers200(): void
