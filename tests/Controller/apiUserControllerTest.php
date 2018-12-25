@@ -31,7 +31,7 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
-     * Implements testGetAllUsers200
+     * Implements testPostUser201
      * @covers ::postUser
      * @return int
      * @throws
