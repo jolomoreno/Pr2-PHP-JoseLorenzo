@@ -182,6 +182,203 @@ class apiResultControllerTest extends WebTestCase
         dump($datosRecibidos, '<<<<<< POST RESULT 404');
     }
 
+    /**
+     * Implements testGetOneUser200
+     * @depends testPostResult201
+     * @covers ::getOneResult
+     * @param array $resultCreado
+     */
+    public function testGetOneResult200(array $resultCreado)
+    {
+        $id = $resultCreado['id'];
+        self::$client->request(
+            Request::METHOD_GET,
+            apiResultController::API_RESULT . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $resultObtenido = json_decode($response->getContent(), true);
+        dump($resultObtenido, '<<<< GET ONE RESULT 200');
+        self::assertArrayHasKey('id', $resultObtenido);
+        self::assertArrayHasKey('result', $resultObtenido);
+        self::assertArrayHasKey('user', $resultObtenido);
+        self::assertEquals($id, $resultObtenido['id']);
+        self::assertEquals($resultCreado['result'], $resultObtenido['result']);
+    }
+
+    /**
+     * Implements testGetOneResult404
+     * @covers ::getOneResult
+     */
+    public function testGetOneResult404(): void
+    {
+        $id = random_int(0, 10E6);
+        self::$client->request(
+            Request::METHOD_GET,
+            apiResultController::API_RESULT . '/' . $id
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+        dump($datosRecibidos, '<<<<<< GET ONE RESULT 404');
+    }
+
+    /**
+     * Implements testPutResult404ResultNotFound
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @param array $resultCreado
+     * @return void
+     * @throws
+     */
+    public function testPutResult404ResultNotFound(array $resultCreado): void
+    {
+        $id = random_int(0, 10E6);
+        $userId = self::$user['id'];;
+        $result = random_int(0, 32);
+
+        $datos = [
+            'user' => $userId,
+            'result' => $result
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultController::API_RESULT . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT RESULT 404 (ResultNotFound)');
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("NOT FOUND", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testPutResult404UserNotFound
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @param array $resultCreado
+     * @return void
+     * @throws
+     */
+    public function testPutResult404UserNotFound(array $resultCreado): void
+    {
+        $id = $resultCreado["id"];
+        $userId = random_int(0, 10E6);
+        $result = random_int(0, 32);
+
+        $datos = [
+            'user' => $userId,
+            'result' => $result
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultController::API_RESULT . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_NOT_FOUND,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT RESULT 404 (UserNotFound)');
+        self::assertEquals(404, $datosRecibidos["message"]["code"]);
+        self::assertEquals("USER NOT FOUND", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testPutResult422
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @param array $resultCreado
+     * @return void
+     * @throws
+     */
+    public function testPutResult422(array $resultCreado): void
+    {
+        $id = $resultCreado["id"];
+        $result = random_int(0, 32);
+
+        $datos = [
+            'result' => $result
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultController::API_RESULT . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_UNPROCESSABLE_ENTITY,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT RESULT 422');
+        self::assertEquals(422, $datosRecibidos["message"]["code"]);
+        self::assertEquals("Falta USER", $datosRecibidos["message"]["message"]);
+    }
+
+    /**
+     * Implements testPutResult422
+     * @depends testPostResult201
+     * @covers ::putResult
+     * @param array $resultCreado
+     * @return void
+     * @throws
+     */
+    public function testPutResult201(array $resultCreado): void
+    {
+        $id = $resultCreado["id"];
+        $userId = self::$user['id'];;
+        $result = random_int(0, 32);
+        $newTimestamp = new \DateTime('now');
+
+        $datos = [
+            'user' => $userId,
+            'result' => $result,
+            'time' => $newTimestamp
+        ];
+        self::$client->request(
+            Request::METHOD_PUT,
+            apiResultController::API_RESULT . '/' . $id,
+            [], [], [], json_encode($datos)
+        );
+        /** @var Response $response */
+        $response = self::$client->getResponse();
+        self::assertEquals(
+            Response::HTTP_OK,
+            $response->getStatusCode()
+        );
+        self::assertJson($response->getContent());
+        $datosRecibidos = json_decode($response->getContent(), true);
+        dump($datosRecibidos, '<<<< PUT RESULT 200');
+        self::assertEquals($result, $datosRecibidos["result"]);
+        self::assertEquals($userId, $datosRecibidos["user"]["id"]);
+    }
+
     /*
      * Ejecución al final de los tests
      */

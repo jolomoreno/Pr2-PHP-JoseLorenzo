@@ -230,9 +230,9 @@ class apiUserControllerTest extends WebTestCase
     }
 
     /**
-     * Implements testPutUser422
+     * Implements testPutUser400
      * @depends testGetOneUser200
-     * @covers ::postUser
+     * @covers ::putUser
      * @param array $user
      * @return void
      * @throws
