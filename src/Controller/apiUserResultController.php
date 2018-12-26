@@ -29,7 +29,7 @@ class apiUserResultController extends AbstractController
     public const API_USER_RESULT = '/api/v1/users';
 
     /**
-    * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
+    * @Route(path="/{id}/results", name="options", methods={ Request::METHOD_OPTIONS })
     * @return JsonResponse
     */
     public function optionsUserResult(): JsonResponse
