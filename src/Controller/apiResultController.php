@@ -50,15 +50,24 @@ class apiResultController extends AbstractController
     }
     
     /**
+     * @param Request|null $request
      * @Route(path="", name="getAll", methods={ Request::METHOD_GET })
      * @return JsonResponse
      */
-    public function getAllResults(): JsonResponse
+    public function getAllResults(?Request $request): JsonResponse
     {
+        $findCriteria = [];
+
+        $orderByGet = $request->query->get('orderBy');
+
+        if(isset($orderByGet)) {
+            $findCriteria = ($orderByGet === 'ASC') ? ['result' => $orderByGet] : ['result' => $orderByGet];
+        }
+
         /** @var Result[] results */
         $results = $this->getDoctrine()
             ->getRepository(Result::class)
-            ->findAll();
+            ->findBy([],$findCriteria);
         return (empty($results))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse($results);

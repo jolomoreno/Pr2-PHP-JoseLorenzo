@@ -49,15 +49,20 @@ class apiUserController extends AbstractController
     }
     
     /**
+     * @param Request|null $request
      * @Route(path="", name="getAll", methods={ Request::METHOD_GET })
      * @return JsonResponse
      */
-    public function getAllUsers(): JsonResponse
+    public function getAllUsers(?Request $request): JsonResponse
     {
+        $orderByGet = $request->query->get('orderBy');
+
+        $findCriteria = (!isset($orderByGet)) ? [] : [$orderByGet => 'ASC'];
+
         /** @var User[] $users */
         $users = $this->getDoctrine()
             ->getRepository(User::class)
-            ->findAll();
+            ->findBy([],$findCriteria);
         return (empty($users))
             ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
             : new JsonResponse($users);
