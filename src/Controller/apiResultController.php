@@ -29,6 +29,16 @@ class apiResultController extends AbstractController
     public const API_RESULT = '/api/v1/results';
 
     /**
+    * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
+    * @return JsonResponse
+    */
+    public function optionsResult(): JsonResponse
+    {
+        // devolver respuesta
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, PUT, POST, DELETE, OPTIONS"));
+    }
+    
+    /**
      * @Route(path="", name="getAll", methods={ Request::METHOD_GET })
      * @return JsonResponse
      */
