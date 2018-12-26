@@ -15,6 +15,11 @@
         "tags": [
           "Users"
         ],
+        "parameters":[
+          {
+            "$ref": "#/components/parameters/orderBy"
+          }
+        ],
         "summary": "Returns all users",
         "description": "Returns all users from the system.",
         "operationId": "api_user_getAll",
@@ -257,6 +262,11 @@
       "get": {
         "tags": [
           "Results"
+        ],
+        "parameters":[
+          {
+            "$ref": "#/components/parameters/orderBy"
+          }
         ],
         "summary": "Returns all results",
         "description": "Returns all results from the system.",
@@ -599,6 +609,16 @@
         "schema": {
           "type": "integer",
           "format": "int32"
+        }
+      },
+      "orderBy": {
+        "name": "orderBy",
+        "in": "query",
+        "description": "OrderBy Criteria",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "string"
         }
       }
     },
