@@ -29,12 +29,15 @@ class apiUserResultController extends AbstractController
     public const API_USER_RESULT = '/api/v1/users';
 
     /**
+     * @param User $user
     * @Route(path="/{id}/results", name="options", methods={ Request::METHOD_OPTIONS })
     * @return JsonResponse
     */
-    public function optionsUserResult(): JsonResponse
+    public function optionsUserResult(?User $user): JsonResponse
     {
-        // devolver respuesta
+        if (null === $user) {
+            return $this->error(Response::HTTP_NOT_FOUND, 'USER DOESNT EXISTS IN DB');
+        }
         return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, DELETE, OPTIONS"));
     }
     

@@ -104,7 +104,7 @@
         ],
         "summary": "Provides the list of HTTP supported methods",
         "description": "Return a `Allow` header with a list of HTTP supported methods.",
-        "operationId": "miw_options_users",
+        "operationId": "api_user_optionsAll",
         "responses": {
           "200": {
             "description": "`Allow` header ",
@@ -232,7 +232,7 @@
         ],
         "summary": "Provides the list of HTTP supported methods",
         "description": "Return a `Allow` header with a list of HTTP supported methods.",
-        "operationId": "miw_options_users_id",
+        "operationId": "api_user_optionsOne",
         "parameters": [
           {
             "$ref": "#/components/parameters/userId"
@@ -340,7 +340,7 @@
         ],
         "summary": "Provides the list of HTTP supported methods",
         "description": "Return a `Allow` header with a list of HTTP supported methods.",
-        "operationId": "miw_options_users",
+        "operationId": "api_result_optionsAll",
         "responses": {
           "200": {
             "description": "`Allow` header ",
@@ -454,6 +454,32 @@
             "$ref": "#/components/responses/404_Resource_Not_Found_Response"
           }
         }
+      },
+      "options": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "api_result_optionsOne",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/resultId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`Allow` header ",
+            "headers": {
+              "allow": {
+                "description": "List of HTTP supported methods",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/users/{userId}/results": {
@@ -503,6 +529,32 @@
           },
           "404": {
             "$ref": "#/components/responses/404_Resource_Not_Found_Response"
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "UserResults"
+        ],
+        "parameters":[
+          {
+            "$ref": "#/components/parameters/userId"
+          }
+        ],
+        "summary": "Provides the list of HTTP supported methods",
+        "description": "Return a `Allow` header with a list of HTTP supported methods.",
+        "operationId": "api_user_result_options",
+        "responses": {
+          "200": {
+            "description": "`Allow` header ",
+            "headers": {
+              "allow": {
+                "description": "List of HTTP supported methods",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }

@@ -29,13 +29,24 @@ class apiResultController extends AbstractController
     public const API_RESULT = '/api/v1/results';
 
     /**
-    * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
-    * @return JsonResponse
-    */
-    public function optionsResult(): JsonResponse
+     * @Route(path="", name="optionsAllResults", methods={ Request::METHOD_OPTIONS })
+     * @return JsonResponse
+     */
+    public function optionsAllResults(): JsonResponse
     {
-        // devolver respuesta
-        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, PUT, POST, DELETE, OPTIONS"));
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, DELETE, OPTIONS"));
+    }
+
+    /**
+     * @Route(path="/{id}", name="optionsOneResult", methods={ Request::METHOD_OPTIONS })
+     * * @param Result|null $result
+     * @return JsonResponse
+     */
+    public function optionsOneResult(?Result $result): JsonResponse
+    {
+        return (null === $result)
+            ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
+            : new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, PUT, DELETE, OPTIONS"));
     }
     
     /**

@@ -28,13 +28,24 @@ class apiUserController extends AbstractController
     public const API_USER = '/api/v1/users';
 
     /**
-    * @Route(path="", name="options", methods={ Request::METHOD_OPTIONS })
+    * @Route(path="", name="optionsAllUsers", methods={ Request::METHOD_OPTIONS })
     * @return JsonResponse
     */
-    public function optionsUser(): JsonResponse
+    public function optionsAllUsers(): JsonResponse
     {
-        // devolver respuesta
-        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, PUT, POST, DELETE, OPTIONS"));
+        return new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, POST, DELETE, OPTIONS"));
+    }
+
+    /**
+     * @Route(path="/{id}", name="optionsOneUser", methods={ Request::METHOD_OPTIONS })
+     * * @param User|null $user
+     * @return JsonResponse
+     */
+    public function optionsOneUser(?User $user): JsonResponse
+    {
+        return (null === $user)
+            ? $this->error(Response::HTTP_NOT_FOUND, 'NOT FOUND')
+            : new JsonResponse(null, Response::HTTP_OK, array("Allow" => "GET, PUT, DELETE, OPTIONS"));
     }
     
     /**
