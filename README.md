@@ -1,2 +1,2 @@
 # Pr2-PHP-JoseLorenzo
-Proyecto para la primera práctica de la asignatura de PHP.
+Repositorio para la segunda práctica de la asignatura de PHP.
